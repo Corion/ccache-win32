@@ -51,7 +51,7 @@ install: ccache$(EXEEXT) ccache.1
 	${INSTALLCMD} -m 644 ${srcdir}/ccache.1 $(DESTDIR)${mandir}/man1/
 
 clean:
-	/bin/rm -f $(OBJS) *~ ccache$(EXEEXT)
+	+$(RM) -f $(OBJS) *~ ccache$(EXEEXT)
 
 test: test.sh
 	CC='$(CC)' ./test.sh
