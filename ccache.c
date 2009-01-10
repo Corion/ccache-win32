@@ -598,8 +598,7 @@ static void find_compiler(int argc, char **argv)
 	if (first_is_meh(argv[0])) {
 		args_remove_first(orig_args);
 		free(base);
-		// if (strchr(argv[1],'/')) {
-		if (strchr(argv[1],'/') || strchr(argv[1],'\\')) {
+		if (strchr(argv[1],PATH_SEP_CHAR)) {
 			/* a full path was given */
 			return;
 		}
@@ -854,7 +853,7 @@ static void process_args(int argc, char **argv)
 	}
 
 	/* cope with -o /dev/null */
-	if (strcmp(output_file,"/dev/null") != 0 && stat(output_file, &st) == 0 && !S_ISREG(st.st_mode)) {
+	if (strcmp(output_file,DEV_NULL) != 0 && stat(output_file, &st) == 0 && !S_ISREG(st.st_mode)) {
 		cc_log("Not a regular file %s\n", output_file);
 		stats_update(STATS_DEVICE);
 		failed();
@@ -1048,8 +1047,7 @@ int main(int argc, char *argv[])
 
 
 	/* check if we are being invoked as "ccache" */
-	if (strlen(argv[0]) >= strlen(MYNAME) &&
-	    strcmp(argv[0] + strlen(argv[0]) - strlen(MYNAME), MYNAME) == 0) {
+	if (first_is_meh(argv[0])) {
 		if (argc < 2) {
 			usage();
 			exit(1);

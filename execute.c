@@ -60,16 +60,7 @@ int execute(char **argv,
 	BOOL ret; 
 	DWORD exitcode;
 	char *args;
-	HANDLE fd_out, fd_err;
-	SECURITY_ATTRIBUTES sa = {sizeof(SECURITY_ATTRIBUTES), NULL, TRUE};
 
-	/*
-	fd_out = CreateFile(path_stdout, GENERIC_WRITE, FILE_SHARE_READ, &sa, CREATE_ALWAYS,
-                            FILE_ATTRIBUTE_NORMAL, NULL);
-	if (fd_out == INVALID_HANDLE_VALUE) {
-		return STATUS_NOCACHE;
-	}
-	*/
 	int   status = -2;
 	int   fd, std_od = -1, std_ed = -1;
 
@@ -109,44 +100,6 @@ out:
 	_flushall();
 	return (status>0);
 	
-        /*
-	fd_err = CreateFile(path_stderr, GENERIC_WRITE, FILE_SHARE_READ, &sa, CREATE_ALWAYS,
-                            FILE_ATTRIBUTE_NORMAL, NULL);
-	if (fd_err == INVALID_HANDLE_VALUE) {
-		cc_log("Failed to create '%s': %s\n", path_stderr, strerror(errno));
-		return STATUS_NOCACHE;
-	}
-   
-	ZeroMemory(&pinfo, sizeof(PROCESS_INFORMATION));
-	ZeroMemory(&sinfo, sizeof(STARTUPINFO));
-
-	sinfo.cb = sizeof(STARTUPINFO); 
-	sinfo.hStdError = fd_err;
-	sinfo.hStdOutput = fd_out;
-	sinfo.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
-	sinfo.dwFlags |= STARTF_USESTDHANDLES;
- 
-	args = argvtos(argv);
-	cc_log("Executing '%s' >%s 2>%s\n", args, path_stdout, path_stderr);
-
-	ret = CreateProcessA(argv[0], args, NULL, NULL, TRUE, 0, NULL, NULL,
-	                     &sinfo, &pinfo);
-
-	free(args);
-	CloseHandle(fd_out);
-	CloseHandle(fd_err);
-
-	if (ret == 0)
-		return -1;
-
-	WaitForSingleObject(pinfo.hProcess, INFINITE);
-	GetExitCodeProcess(pinfo.hProcess, &exitcode);
-	CloseHandle(pinfo.hProcess);
-	CloseHandle(pinfo.hThread);
-
-	cc_log("Child exit status: %d\n", exitcode);
-	return exitcode;
-	*/
 #else
 	pid_t pid;
 	int status;

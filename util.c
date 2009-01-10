@@ -237,7 +237,7 @@ void traverse(const char *dir, void (*fn)(const char *, struct stat *))
 
 		if (strlen(de->d_name) == 0) continue;
 
-		x_asprintf(&fname, "%s/%s", dir, de->d_name);
+		x_asprintf(&fname, "%s"PATH_SEP"%s", dir, de->d_name);
 #ifdef _WIN32
 		if (stat(fname, &st)) {
 #else
@@ -265,15 +265,14 @@ void traverse(const char *dir, void (*fn)(const char *, struct stat *))
 /* return the base name of a file - caller frees */
 char *str_basename(const char *s)
 {
-	// char *p = strrchr(s, '/');
 	char *p;
-	p = strrchr(s, '/');
+	p = strrchr(s, PATH_SEP_CHAR);
 	
 	if (p) {
 		s = (p+1);
 	}
 
-	p = strrchr(s, '\\');
+	p = strrchr(s, PATH_SEP_CHAR);
 
 	if (p) {
 		s = (p+1);
@@ -287,8 +286,7 @@ char *dirname(char *s)
 {
 	char *p;
 	s = x_strdup(s);
-	p = strrchr(s, '/');
-	p = strrchr(s, '\\');
+	p = strrchr(s, PATH_SEP_CHAR);
 	if (p) {
 		*p = 0;
 	} 
@@ -314,7 +312,8 @@ int lock_fd(int fd)
 	} while (ret == -1 && errno == EINTR);
 	return ret;
 #else
-	return 0;
+	return _locking(fd, _LK_NBLCK, 1);
+	//return 0;
 #endif
 }
 
@@ -322,7 +321,8 @@ int lock_fd(int fd)
 size_t file_size(struct stat *st)
 {
 #ifdef _WIN32
-	return (st->st_size + 1023) & ~1023;
+	// return (st->st_size + 1023) & ~1023;
+	return st->st_size;
 #else
 	size_t size = st->st_blocks * 512;
 	if ((size_t)st->st_size > size) {
@@ -458,16 +458,6 @@ char *gnu_getcwd(void)
 		size *= 2;
 	}
 }
-
-//#ifndef HAVE_MKSTEMP
-/* cheap and nasty mkstemp replacement */
-//int mkstemp(char *template)
-//{
-//	mktemp(template);
-//	return open(template, O_RDWR | O_CREAT | O_EXCL | O_BINARY, 0600);
-//}
-//#endif
-
 
 /* create an empty file */
 int create_empty_file(const char *fname)
