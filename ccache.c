@@ -5,6 +5,7 @@
 
    Copyright (C) Andrew Tridgell 2002
    Copyright (C) Martin Pool 2003
+   Copyright (C) Max Maischein 2009
    
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -908,7 +909,7 @@ static void ccache(int argc, char *argv[])
 static void usage(void)
 {
 	printf("ccache, a compiler cache. Version %s\n", CCACHE_VERSION);
-	printf("Copyright Andrew Tridgell, 2002\n\n");
+	printf("Copyright Andrew Tridgell, 2002-2009\n\n");
 	
 	printf("Usage:\n");
 	printf("\tccache [options]\n");
