@@ -210,7 +210,7 @@ static void to_cache(ARGS *args)
 
 		fd = open(tmp_stderr, O_RDONLY | O_BINARY);
 		if (fd != -1) {
-			if (strcmp(output_file, "/dev/null") == 0 ||
+			if (strcmp(output_file, DEV_NULL) == 0 ||
 			    rename(tmp_hashname, output_file) == 0 || errno == ENOENT) {
 				if (cpp_stderr) {
 					/* we might have some stderr from cpp */
@@ -1026,7 +1026,7 @@ int main(int argc, char *argv[])
 
 	cache_dir = getenv("CCACHE_DIR");
 	if (!cache_dir) {
-		x_asprintf(&cache_dir, "%s\\.ccache", get_home_directory());
+		x_asprintf(&cache_dir, "%s"PATH_SEP".ccache", get_home_directory());
 	}
 
 	temp_dir = getenv("CCACHE_TEMPDIR");
