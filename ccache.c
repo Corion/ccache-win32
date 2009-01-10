@@ -505,14 +505,17 @@ static void from_cache(int first)
 
 	utime(stderr_file, NULL);
 
-	if (strcmp(output_file, "/dev/null") == 0) {
+	if (strcmp(output_file, DEV_NULL) == 0) {
 		ret = 0;
 	} else {
 		unlink(output_file);
-#ifdef _WIN32
                 /* try to create hard link first if we were asked for it */
 		if (getenv("CCACHE_HARDLINK")) {
+#ifdef _WIN32
 			ret = CreateHardLinkA(output_file, hashname, NULL) ? 0 : -1;
+#else
+			ret = link(hashname, output_file);
+#endif
 		} else {
 			ret = -1;
 		}
@@ -522,13 +525,6 @@ static void from_cache(int first)
 		if (ret == -1) {
 			ret = copy_file(hashname, output_file);
 		}
-#else
-		if (getenv("CCACHE_HARDLINK")) {
-			ret = link(hashname, output_file);
-		} else {
-			ret = copy_file(hashname, output_file);
-		}
-#endif
 	}
 
 	/* the hash file might have been deleted by some external process */
