@@ -51,7 +51,7 @@ void hash_file(const char *fname)
 
 	fd = open(fname, O_RDONLY|O_BINARY);
 	if (-1 == fd) {
-		cc_log("Failed to open '%s': %s", fname, strerror(errno));
+		cc_log("Failed to open xxx '%s': [%s]\n", fname, strerror(errno));
 		fatal("hash_file");
 	}
 

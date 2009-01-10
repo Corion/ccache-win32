@@ -415,12 +415,6 @@ static void find_hash(ARGS *args)
 	   as it gives the wrong line numbers for warnings. Pity.
 	*/
 	if (!enable_unify) {
-		char *p = path_stdout;
-		while (*p) {
-			if ('/' == *p ) { *p = '\\'; };
-			p++;
-		};
-		//cc_log("Hashing %s\n", path_stdout);
 		hash_file(path_stdout);
 	} else {
 		if (unify_hash(path_stdout) != 0) {
@@ -428,7 +422,6 @@ static void find_hash(ARGS *args)
 			failed();
 		}
 	}
-	//cc_log("Hashing %s\n", path_stderr);
 	hash_file(path_stderr);
 
 	i_tmpfile = path_stdout;
