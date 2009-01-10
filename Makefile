@@ -11,6 +11,21 @@ CC=gcc -mno-cygwin -O2
 CFLAGS=-I.
 EXEEXT=
 
+o=.o
+
+# dmake magic
+.SUFFIXES : .c .i $(o) .dll $(a) .exe .rc .res
+OBJOUT_FLAG=-o
+
+.c$(o):
+	$(CC) -c $(null,$(<:d) $(NULL) -I$(<:d)) $(CFLAGS_O) $(OBJOUT_FLAG)$@ $<
+
+.c.i:
+	$(CC) -c $(null,$(<:d) $(NULL) -I$(<:d)) $(CFLAGS_O) -E $< >$@
+
+.y.c:
+	$(NOOP)
+
 OBJS= ccache.o mdfour.o hash.o execute.o util.o args.o stats.o \
 	cleanup.o snprintf.o unify.o
 HEADERS = ccache.h mdfour.h
