@@ -158,9 +158,9 @@ static void to_cache(ARGS *args)
 	struct stat st1, st2;
 	int status;
 
-	x_asprintf(&tmp_stdout, "%s/tmp.stdout.%s", temp_dir, tmp_string());
-	x_asprintf(&tmp_stderr, "%s/tmp.stderr.%s", temp_dir, tmp_string());
-	x_asprintf(&tmp_hashname, "%s/tmp.hash.%s.o", temp_dir, tmp_string());
+	x_asprintf(&tmp_stdout, "%s\\tmp.stdout.%s", temp_dir, tmp_string());
+	x_asprintf(&tmp_stderr, "%s\\tmp.stderr.%s", temp_dir, tmp_string());
+	x_asprintf(&tmp_hashname, "%s\\tmp.hash.%s.o", temp_dir, tmp_string());
 
 	args_add(args, "-o");
 	args_add(args, tmp_hashname);
@@ -221,7 +221,10 @@ static void to_cache(ARGS *args)
 				}
 				exit(status);
 			}
-		}
+		} else {
+			cc_log("Couldn't (re)read '%s': %s\n", tmp_stderr, strerror(errno));
+		
+		};
 		
 		unlink(tmp_stderr);
 		unlink(tmp_hashname);
@@ -357,10 +360,10 @@ static void find_hash(ARGS *args)
 	}
 
 	/* now the run */
-	x_asprintf(&path_stdout, "%s/%s.tmp.%s.%s", temp_dir,
+	x_asprintf(&path_stdout, "%s\\%s.tmp.%s.%s", temp_dir,
 		   input_base, tmp_string(), 
 		   i_extension);
-	x_asprintf(&path_stderr, "%s/tmp.cpp_stderr.%s", temp_dir, tmp_string());
+	x_asprintf(&path_stderr, "%s\\tmp.cpp_stderr.%s", temp_dir, tmp_string());
 
 	if (!direct_i_file) {
 		/* run cpp on the input file to obtain the .i */
@@ -400,6 +403,12 @@ static void find_hash(ARGS *args)
 	   as it gives the wrong line numbers for warnings. Pity.
 	*/
 	if (!enable_unify) {
+		char *p = path_stdout;
+		while (*p) {
+			if ('/' == *p ) { *p = '\\'; };
+			p++;
+		};
+		//cc_log("Hashing %s\n", path_stdout);
 		hash_file(path_stdout);
 	} else {
 		if (unify_hash(path_stdout) != 0) {
@@ -407,6 +416,7 @@ static void find_hash(ARGS *args)
 			failed();
 		}
 	}
+	cc_log("Hashing %s\n", path_stderr);
 	hash_file(path_stderr);
 
 	i_tmpfile = path_stdout;
@@ -999,7 +1009,7 @@ int main(int argc, char *argv[])
 
 	cache_dir = getenv("CCACHE_DIR");
 	if (!cache_dir) {
-		x_asprintf(&cache_dir, "%s/.ccache", get_home_directory());
+		x_asprintf(&cache_dir, "%s\\.ccache", get_home_directory());
 	}
 
 	temp_dir = getenv("CCACHE_TEMPDIR");

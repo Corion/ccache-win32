@@ -47,11 +47,11 @@ void hash_int(int x)
 void hash_file(const char *fname)
 {
 	char buf[1024];
-	int fd, n;
+	int n, fd;
 
 	fd = open(fname, O_RDONLY|O_BINARY);
-	if (fd == -1) {
-		cc_log("Failed to open %s\n", fname);
+	if (-1 == fd) {
+		cc_log("Failed to open '%s': %s", fname, strerror(errno));
 		fatal("hash_file");
 	}
 

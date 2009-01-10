@@ -63,15 +63,16 @@ int execute(char **argv,
 	HANDLE fd_out, fd_err;
 	SECURITY_ATTRIBUTES sa = {sizeof(SECURITY_ATTRIBUTES), NULL, TRUE};
 
-	fd_out = CreateFile(path_stdout, GENERIC_WRITE, 0, &sa, CREATE_ALWAYS,
+	fd_out = CreateFile(path_stdout, GENERIC_WRITE, FILE_SHARE_READ, &sa, CREATE_ALWAYS,
                             FILE_ATTRIBUTE_NORMAL, NULL);
 	if (fd_out == INVALID_HANDLE_VALUE) {
 		return STATUS_NOCACHE;
 	}
 
-	fd_err = CreateFile(path_stderr, GENERIC_WRITE, 0, &sa, CREATE_ALWAYS,
+	fd_err = CreateFile(path_stderr, GENERIC_WRITE, FILE_SHARE_READ, &sa, CREATE_ALWAYS,
                             FILE_ATTRIBUTE_NORMAL, NULL);
 	if (fd_err == INVALID_HANDLE_VALUE) {
+		cc_log("Failed to create '%s': %s\n", path_stderr, strerror(errno));
 		return STATUS_NOCACHE;
 	}
    
@@ -85,6 +86,7 @@ int execute(char **argv,
 	sinfo.dwFlags |= STARTF_USESTDHANDLES;
  
 	args = argvtos(argv);
+	cc_log("Executing '%s' >%s 2>%s\n", args, path_stdout, path_stderr);
 
 	ret = CreateProcessA(argv[0], args, NULL, NULL, TRUE, 0, NULL, NULL,
 	                     &sinfo, &pinfo);
@@ -101,6 +103,7 @@ int execute(char **argv,
 	CloseHandle(pinfo.hProcess);
 	CloseHandle(pinfo.hThread);
 
+	cc_log("Child exit status: %d\n", exitcode);
 	return exitcode;
 #else
 	pid_t pid;
