@@ -1,6 +1,10 @@
 #define CCACHE_VERSION "2.4"
 
 //#include "config.h"
+#define USUAL_PATH_SEP_CHAR '/'
+#define USUAL_PATH_SEP "/"
+#define WIN32_PATH_SEP_CHAR '\\'
+#define WIN32_PATH_SEP "\\"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -10,12 +14,26 @@
 #include <sys/types.h>
 
 #ifndef _WIN32
+#define MYNAME "ccache"
+#define PATH_SEP USUAL_PATH_SEP
+#define PATH_SEP_CHAR USUAL_PATH_SEP_CHAR
+#define DEV_NULL "/dev/null"
+
  #include <sys/wait.h>
  #include <sys/mman.h>
 #else
+
 #define _WIN32_WINNT 0x0500
- #include <windows.h>
- #include <shlobj.h>
+#define MYNAME "ccache"
+#define PATH_SEP WIN32_PATH_SEP
+#define PATH_SEP_CHAR WIN32_PATH_SEP_CHAR
+#define DEV_NULL "NUL"
+
+#include <windows.h>
+#include <shlobj.h>
+#include <windows.h>
+#include <sys/locking.h>
+
 #endif
 
 #include <sys/file.h>
@@ -34,12 +52,6 @@
 #define STATUS_NOTFOUND 3
 #define STATUS_FATAL 4
 #define STATUS_NOCACHE 5
-
-#ifdef _WIN32
- #define MYNAME "ccache.exe"
-#else
- #define MYNAME "ccache"
-#endif
 
 #define LIMIT_MULTIPLE 0.8
 

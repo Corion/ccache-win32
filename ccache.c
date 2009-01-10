@@ -149,6 +149,18 @@ static const char *tmp_string(void)
 	return ret;
 }
 
+// From http://lists.samba.org/archive/ccache/2006q3/000242.html
+static int first_is_meh(const char* first)
+{
+    const char*  exe = strrchr(first, PATH_SEP_CHAR);
+    const size_t len = strlen(MYNAME);
+
+    if (exe) exe++;
+    else     exe=first;
+    return (strlen(exe) >= len && strncmp(exe, MYNAME, len) == 0 &&
+            (exe[len]==0 || strcmp(exe+len, ".exe")==0) );
+}
+
 
 /* run the real compiler and put the result in cache */
 static void to_cache(ARGS *args)
@@ -242,7 +254,7 @@ static void to_cache(ARGS *args)
 		failed();
 	}
 
-	cc_log("Placed %s into cache\n", output_file);
+	cc_log("Placed %s into cache as %s\n", output_file, hashname);
 	stats_tocache(file_size(&st1) + file_size(&st2));
 
 	free(tmp_hashname);
@@ -587,7 +599,7 @@ static void find_compiler(int argc, char **argv)
 	base = str_basename(argv[0]);
 
 	/* we might be being invoked like "ccache gcc -c foo.c" */
-	if (strcmp(base, MYNAME) == 0) {
+	if (first_is_meh(argv[0])) {
 		args_remove_first(orig_args);
 		free(base);
 		// if (strchr(argv[1],'/')) {
