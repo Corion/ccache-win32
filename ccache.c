@@ -170,9 +170,9 @@ static void to_cache(ARGS *args)
 	struct stat st1, st2;
 	int status;
 
-	x_asprintf(&tmp_stdout, "%s\\tmp.stdout.%s", temp_dir, tmp_string());
-	x_asprintf(&tmp_stderr, "%s\\tmp.stderr.%s", temp_dir, tmp_string());
-	x_asprintf(&tmp_hashname, "%s\\tmp.hash.%s.o", temp_dir, tmp_string());
+	x_asprintf(&tmp_stdout, "%s"PATH_SEP"tmp.stdout.%s", temp_dir, tmp_string());
+	x_asprintf(&tmp_stderr, "%s"PATH_SEP"tmp.stderr.%s", temp_dir, tmp_string());
+	x_asprintf(&tmp_hashname, "%s"PATH_SEP"tmp.hash.%s.o", temp_dir, tmp_string());
 
 	args_add(args, "-o");
 	args_add(args, tmp_hashname);
@@ -372,10 +372,10 @@ static void find_hash(ARGS *args)
 	}
 
 	/* now the run */
-	x_asprintf(&path_stdout, "%s\\%s.tmp.%s.%s", temp_dir,
+	x_asprintf(&path_stdout, "%s"PATH_SEP"%s.tmp.%s.%s", temp_dir,
 		   input_base, tmp_string(), 
 		   i_extension);
-	x_asprintf(&path_stderr, "%s\\tmp.cpp_stderr.%s", temp_dir, tmp_string());
+	x_asprintf(&path_stderr, "%s"PATH_SEP"tmp.cpp_stderr.%s", temp_dir, tmp_string());
 
 	if (!direct_i_file) {
 		/* run cpp on the input file to obtain the .i */
@@ -447,15 +447,15 @@ static void find_hash(ARGS *args)
 	   on filesystems which are slow for large directories
 	*/
 	s = hash_result();
-	x_asprintf(&hash_dir, "%s/%c", cache_dir, s[0]);
-	x_asprintf(&stats_file, "%s/stats", hash_dir);
+	x_asprintf(&hash_dir, "%s"PATH_SEP"%c", cache_dir, s[0]);
+	x_asprintf(&stats_file, "%s"PATH_SEP"stats", hash_dir);
 	for (i=1; i<nlevels; i++) {
 		char *p;
 		if (create_dir(hash_dir) != 0) {
 			cc_log("failed to create %s\n", hash_dir);
 			failed();
 		}
-		x_asprintf(&p, "%s/%c", hash_dir, s[i]);
+		x_asprintf(&p, "%s"PATH_SEP"%c", hash_dir, s[i]);
 		free(hash_dir);
 		hash_dir = p;
 	}
@@ -463,7 +463,7 @@ static void find_hash(ARGS *args)
 		cc_log("failed to create %s\n", hash_dir);
 		failed();
 	}
-	x_asprintf(&hashname, "%s/%s", hash_dir, s+nlevels);
+	x_asprintf(&hashname, "%s"PATH_SEP"%s", hash_dir, s+nlevels);
 	free(hash_dir);
 }
 

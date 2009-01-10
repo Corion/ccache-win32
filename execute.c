@@ -229,7 +229,7 @@ char *find_executable(const char *name, const char *exclude_name)
 	   that isn't us */
 	for (tok=strtok(path,":"); tok; tok = strtok(NULL, ":")) {
 		char *fname;
-		x_asprintf(&fname, "%s/%s", tok, name);
+		x_asprintf(&fname, "%s"PATH_SEP"%s", tok, name);
 		/* look for a normal executable file */
 		if (access(fname, X_OK) == 0 &&
 		    lstat(fname, &st1) == 0 &&
