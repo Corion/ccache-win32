@@ -416,7 +416,7 @@ static void find_hash(ARGS *args)
 			failed();
 		}
 	}
-	cc_log("Hashing %s\n", path_stderr);
+	//cc_log("Hashing %s\n", path_stderr);
 	hash_file(path_stderr);
 
 	i_tmpfile = path_stdout;
@@ -793,7 +793,12 @@ static void process_args(int argc, char **argv)
 	}
 
 	if (!input_file) {
-		cc_log("No input file found\n");
+
+		cc_log("No input file found in [");
+		for(i=0;i<argc;i++) {
+			cc_log(" '%s'", argv[i]);
+		};
+		cc_log(" ]\n");
 		stats_update(STATS_NOINPUT);
 		failed();
 	}
