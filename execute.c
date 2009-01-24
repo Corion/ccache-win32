@@ -21,28 +21,28 @@
 #ifdef _WIN32
 static char *argvtos(char **argv)
 {
-	int i, len;
-	char *ptr, *str;
+       int i, len;
+       char *ptr, *str;
 
-	for (i = 0, len = 0; argv[i]; i++) {
-		len += strlen(argv[i]) + 3;
-	}
+       for (i = 0, len = 0; argv[i]; i++) {
+               len += strlen(argv[i]) + 3;
+       }
 
-	str = ptr = (char *)malloc(len + 1);
-	if (str == NULL)
-		return NULL;
+       str = ptr = (char *)malloc(len + 1);
+       if (str == NULL)
+               return NULL;
 
-	for (i = 0; argv[i]; i++) {
-		len = strlen(argv[i]);
-		*ptr++ = '"';
-		memcpy(ptr, argv[i], len);
-		ptr += len;
-		*ptr++ = '"';
-		*ptr++ = ' ';
-	}
-	*ptr = 0;
+       for (i = 0; argv[i]; i++) {
+               len = strlen(argv[i]);
+               *ptr++ = '"';
+               memcpy(ptr, argv[i], len);
+               ptr += len;
+               *ptr++ = '"';
+               *ptr++ = ' ';
+       }
+       *ptr = 0;
 
-	return str;
+       return str;
 }
 #endif
 
@@ -63,7 +63,7 @@ int execute(char **argv,
 
 	int   status = -2;
 	int   fd, std_od = -1, std_ed = -1;
-
+	
 	unlink(path_stdout);
 	std_od = _dup(1);
 	fd = _open(path_stdout, O_WRONLY|O_CREAT|O_TRUNC|O_EXCL|O_BINARY, 0666);
@@ -85,6 +85,17 @@ int execute(char **argv,
 	}
 	_dup2(fd, 2);
 	_close(fd);
+
+        /* copy argv and requote arguments if necessary */
+        /*
+        int argc;
+        for (argc = 0; *argv[argc]; argc++) {
+		printf("%d: Found argument %s\n", argc, *argv[argc]);
+        };
+        
+        ARGS* quoted_args = args_init_q(argc, argv);
+        char** quoted_argv = quoted_args->argv;
+        */
 
 	/* Spawn process (_exec* familly doesn't return) */
 	status = _spawnv(_P_WAIT, argv[0], argv);
