@@ -15,6 +15,10 @@ o=.o
 
 # dmake magic
 .SUFFIXES : .c .i $(o) .dll $(a) .exe .rc .res
+.PHONY : test
+
+all: ccache$(EXEEXT)
+
 OBJOUT_FLAG=-o
 
 .c$(o):
@@ -29,8 +33,6 @@ OBJOUT_FLAG=-o
 OBJS= ccache.o mdfour.o hash.o execute.o util.o args.o stats.o \
 	cleanup.o snprintf.o unify.o
 HEADERS = ccache.h mdfour.h
-
-all: ccache$(EXEEXT)
 
 docs: ccache.1 web/ccache-man.html
 
@@ -53,8 +55,9 @@ install: ccache$(EXEEXT) ccache.1
 clean:
 	+$(RM) -f $(OBJS) *~ ccache$(EXEEXT)
 
-test: test.sh
-	CC='$(CC)' ./test.sh
+test: ccache$(EXEEXT)
+#	CC='$(CC)' ./test.sh
+	.\ccache$(EXEEXT) $(CC) -Werror -DVERSION=\"1\" -c t\quote_passthrough.c
 
 check: test
 
