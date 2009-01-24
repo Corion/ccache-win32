@@ -1,0 +1,4 @@
+.ccache/
+*.o
+*.exe
+ccache_cache/
