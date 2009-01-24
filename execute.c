@@ -59,7 +59,6 @@ int execute(char **argv,
 	STARTUPINFO sinfo;
 	BOOL ret; 
 	DWORD exitcode;
-	char *args;
 
 	int   status = -2;
 	int   fd, std_od = -1, std_ed = -1;
@@ -86,19 +85,18 @@ int execute(char **argv,
 	_dup2(fd, 2);
 	_close(fd);
 
-        /* copy argv and requote arguments if necessary */
-        /*
         int argc;
-        for (argc = 0; *argv[argc]; argc++) {
-		printf("%d: Found argument %s\n", argc, *argv[argc]);
+        
+	// printf("%d: Found argument %s\n", argc, argv[0]);
+        for (argc = 0; argv[argc]; argc++) {
+		// printf("%d: Found argument %s\n", argc, argv[argc]);
         };
         
         ARGS* quoted_args = args_init_q(argc, argv);
         char** quoted_argv = quoted_args->argv;
-        */
 
 	/* Spawn process (_exec* familly doesn't return) */
-	status = _spawnv(_P_WAIT, argv[0], argv);
+	status = _spawnv(_P_WAIT, quoted_argv[0], quoted_argv);
 
 out:
 	cc_log("%s:\n  stdout -> %s\n  stderr -> %s\n  process status=%i\n",

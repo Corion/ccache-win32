@@ -43,6 +43,55 @@ void args_add(ARGS *args, const char *s)
 	args->argv[args->argc] = NULL;
 }
 
+/* Backslash-quote doublequotes in the argument */
+void args_add_q(ARGS *args, const char *s)
+{
+	args->argv = (char**)x_realloc(args->argv, (args->argc + 2) * sizeof(char *));
+
+	// XXX We leak some memory, but do we care?
+	char* p = x_malloc( strlen(s) *2);
+	
+	// Now copy the string, quoting any "contained" double quotes
+	// This is bad style, but while I can read C, I'm not as eloquent writing it
+	// Perl has its advantages with string handling :)
+	char* q = p;
+	const char* t = s;
+	boolean start_quote = *t == '"';
+	*q = *t;
+	q++;
+	t++;
+	
+	for (; *t; t++ ) {
+		// Quote all but (potential) last-in-string double quote
+		if (*t == '"' && (!start_quote || *(t+1) )) {
+			*q = '\\';
+			q++;
+		};
+		*q = *t;
+		q++;
+		// cc_log("Appended <%c> to %s\n", *t, p);
+	};
+	*q = '\0';
+	args->argv[args->argc] = p;
+	args->argc++;
+	args->argv[args->argc] = NULL;
+}
+
+/* Copy ARGS structure and backslash-quote all double quotes except those at start or end of string */
+ARGS *args_init_q(int init_argc, char **init_args)
+{
+	ARGS *args;
+	int i;
+	args = (ARGS *)x_malloc(sizeof(ARGS));
+	args->argc = 0;
+	args->argv = (char **)x_malloc(sizeof(char *));
+	args->argv[0] = NULL;
+	for (i=0;i<init_argc;i++) {
+		args_add_q(args, init_args[i]);
+	}
+	return args;
+}
+
 /* pop the last element off the args list */
 void args_pop(ARGS *args, int n)
 {
