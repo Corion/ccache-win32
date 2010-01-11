@@ -50,16 +50,16 @@ void args_add_q(ARGS *args, const char *s)
 
 	// XXX We leak some memory, but do we care?
 	char* p = x_malloc( strlen(s) *2);
+	char* q = p;
 	
 	// Now copy the string, quoting any "contained" double quotes
 	// This is bad style, but while I can read C, I'm not as eloquent writing it
 	// Perl has its advantages with string handling :)
-	char* q = p;
 	const char* t = s;
 	boolean start_quote = *t == '"';
 	*q = *t;
-	q++;
 	t++;
+	q++;
 	
 	for (; *t; t++ ) {
 		// Quote all but (potential) last-in-string double quote
@@ -69,7 +69,7 @@ void args_add_q(ARGS *args, const char *s)
 		};
 		*q = *t;
 		q++;
-		// cc_log("Appended <%c> to %s\n", *t, p);
+		*q = '\0';
 	};
 	*q = '\0';
 	args->argv[args->argc] = p;

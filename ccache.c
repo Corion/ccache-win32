@@ -191,6 +191,7 @@ static void to_cache(ARGS *args)
 	} else {
 		args_add(args, i_tmpfile);
 	}
+	cc_log("to_cache()\n");
 	status = execute(args->argv, tmp_stdout, tmp_stderr);
 	args_pop(args, 3);
 
@@ -382,6 +383,7 @@ static void find_hash(ARGS *args)
 		/* run cpp on the input file to obtain the .i */
 		args_add(args, "-E");
 		args_add(args, input_file);
+		cc_log("find_hash -E (%s)\n", input_file);
 		status = execute(args->argv, path_stdout, path_stderr);
 		args_pop(args, 2);
 	} else {
@@ -867,6 +869,7 @@ static void process_args(int argc, char **argv)
 static void ccache(int argc, char *argv[])
 {
 	/* find the real compiler */
+	cc_log("Launched for %s\n", argv[argc-1]);
 	find_compiler(argc, argv);
 	
 	/* we might be disabled */

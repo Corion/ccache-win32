@@ -63,6 +63,8 @@ int execute(char **argv,
 	int   status = -2;
 	int   fd, std_od = -1, std_ed = -1;
 	
+	cc_log("Executing...\n");
+	
 	unlink(path_stdout);
 	std_od = _dup(1);
 	fd = _open(path_stdout, O_WRONLY|O_CREAT|O_TRUNC|O_EXCL|O_BINARY, 0666);
@@ -87,11 +89,11 @@ int execute(char **argv,
 
         int argc;
         
-	// printf("%d: Found argument %s\n", argc, argv[0]);
         for (argc = 0; argv[argc]; argc++) {
 		// printf("%d: Found argument %s\n", argc, argv[argc]);
         };
         
+        cc_log("Quoting %d arguments\n", argc);
         ARGS* quoted_args = args_init_q(argc, argv);
         char** quoted_argv = quoted_args->argv;
 
@@ -100,7 +102,7 @@ int execute(char **argv,
 
 out:
 	cc_log("%s:\n  stdout -> %s\n  stderr -> %s\n  process status=%i\n",
-	        argv[0], path_stdout, path_stderr, status);
+	        quoted_argv[0], path_stdout, path_stderr, status);
 	if (status == -1) cc_log("Error %i: %s\n", errno, strerror(errno));
 
 	/* Restore descriptors */
