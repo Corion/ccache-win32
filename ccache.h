@@ -1,4 +1,4 @@
-#define CCACHE_VERSION "2.402"
+#define CCACHE_VERSION "2.403"
 
 //#include "config.h"
 #define USUAL_PATH_SEP_CHAR '/'
